@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const kbackgndColor = Color(0xFF212529);
 const kbuttonbackgnd = Color(0xFF343a40);
+const kfloatbackgnd = Color(0xFF495057);
 
 const kbscolor = Color(0xFFffb600);
 const kbsdark = Color(0xFFe85d04);
@@ -31,7 +32,7 @@ const kpanvdark = Color(0xFFf4f1de);
 const kpamax = Color(0xFFff5e5b);
 const kpaswap = Color(0xFFbc6c25);
 
-const kheightbars = 600;
+const kheightbars = 650;
 
 const kmin = 20.0;
 const kmax = 250.0;
@@ -41,15 +42,3 @@ const kfontsizename = 20.0;
 
 const kspeedmax = 200000.0;
 const kspeedmin = 20.0;
-
-class xyz extends StatefulWidget {
-  @override
-  _xyzState createState() => _xyzState();
-}
-
-class _xyzState extends State<xyz> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}

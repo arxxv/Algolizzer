@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import '../Configuration/constants.dart';
 import 'package:algolizzzer/Screens/BruteForce.dart';
-import 'info.dart';
+import 'menu.dart';
 
 class Home extends StatefulWidget {
   @override

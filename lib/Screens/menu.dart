@@ -2,7 +2,6 @@ import 'package:algolizzzer/Screens/Divide&Conquer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:algolizzzer/Configuration/constants.dart';
-import 'package:algolizzzer/Configuration/config.dart';
 import 'package:algolizzzer/Screens/BruteForce.dart';
 
 class Menu extends StatefulWidget {

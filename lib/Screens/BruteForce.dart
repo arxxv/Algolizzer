@@ -10,11 +10,11 @@ class BruteForce extends StatefulWidget {
 }
 
 class BruteForceState extends State<BruteForce> {
-  List<int> _numArray = [];
-  StreamController<List<int>> _streamController = StreamController();
-  double totalBars = 69;
-  bool isSorting = false;
-  bool isSorted = false;
+  static List<int> _numArray = [];
+  static StreamController<List<int>> _streamController = StreamController();
+  static double totalBars = 69;
+  static bool isSorting = false;
+  static bool isSorted = false;
 
   int cycle_startx = 0;
   int posx = 0;
@@ -52,15 +52,25 @@ class BruteForceState extends State<BruteForce> {
     setState(() {});
   }
 
-  _buildArray() {
+  static _buildArray() {
     isSorted = false;
     _numArray = [];
 
     for (int i = 0; i < totalBars; ++i) {
       int x = Random().nextInt(kheightbars);
       _numArray.add(x);
-      print(x);
     }
+    _streamController.add(_numArray);
+  }
+
+  static _worstcase() {
+    isSorted = false;
+    for (int i = 0; i < totalBars; ++i) {
+      int x = Random().nextInt(kheightbars);
+      _numArray.add(x);
+    }
+    _numArray.sort();
+    _numArray = List.from(_numArray.reversed);
     _streamController.add(_numArray);
   }
 
@@ -557,6 +567,43 @@ class BruteForceState extends State<BruteForce> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          foregroundColor: getcolor(),
+          shape: _DiamondBorder(),
+          backgroundColor: kfloatbackgnd,
+          onPressed: isSorting ? null : _sort,
+          child: Icon(Icons.sort),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomAppBar(
+//          notchedShape: CircularNotchedRectangle(),
+
+          color: kbuttonbackgnd,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: FlatButton(
+                  onPressed: isSorting ? null : _buildArray,
+                  child: Text(
+                    "Randomize",
+                    style: TextStyle(
+                        color: isSorting ? null : getcolor(), fontSize: 15),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: FlatButton(
+                  onPressed: isSorting ? null : _worstcase,
+                  child: Text(
+                    "Worst-case",
+                    style: TextStyle(
+                        color: isSorting ? null : getcolor(), fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         key: _scaffoldKey,
         backgroundColor: kbackgndColor,
         body: SafeArea(
@@ -730,38 +777,41 @@ class BruteForceState extends State<BruteForce> {
                       )
                     ],
                   ),
+                  SizedBox(
+                    height: 15,
+                  )
 //            =========================================================================THE BUILD AND SORT BUTTONS=================================================================================
-                  Container(
-                    decoration: BoxDecoration(
-                      color: kbuttonbackgnd,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: FlatButton(
-                            onPressed: isSorting ? null : _buildArray,
-                            child: Text(
-                              "Build",
-                              style: TextStyle(
-                                  color: isSorting ? null : getcolor(),
-                                  fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: FlatButton(
-                            onPressed: isSorting ? null : _sort,
-                            child: Text(
-                              "Sort",
-                              style: TextStyle(
-                                  color: isSorting ? null : getcolor(),
-                                  fontSize: 15),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+//                  Container(
+//                    decoration: BoxDecoration(
+//                      color: kbuttonbackgnd,
+//                    ),
+//                    child: Row(
+//                      children: <Widget>[
+//                        Expanded(
+//                          child: FlatButton(
+//                            onPressed: isSorting ? null : _buildArray,
+//                            child: Text(
+//                              "Build",
+//                              style: TextStyle(
+//                                  color: isSorting ? null : getcolor(),
+//                                  fontSize: 15),
+//                            ),
+//                          ),
+//                        ),
+//                        Expanded(
+//                          child: FlatButton(
+//                            onPressed: isSorting ? null : _worstcase,
+//                            child: Text(
+//                              "Worst-case",
+//                              style: TextStyle(
+//                                  color: isSorting ? null : getcolor(),
+//                                  fontSize: 15),
+//                            ),
+//                          ),
+//                        ),
+//                      ],
+//                    ),
+//                  ),
                 ],
               )
             ],
@@ -794,5 +844,38 @@ class BarPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
+  }
+}
+
+class _DiamondBorder extends ShapeBorder {
+  const _DiamondBorder();
+
+  @override
+  EdgeInsetsGeometry get dimensions {
+    return const EdgeInsets.only();
+  }
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection textDirection}) {
+    return getOuterPath(rect, textDirection: textDirection);
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection textDirection}) {
+    return Path()
+      ..moveTo(rect.left + rect.width / 2.0, rect.top)
+      ..lineTo(rect.right, rect.top + rect.height / 2.0)
+      ..lineTo(rect.left + rect.width / 2.0, rect.bottom)
+      ..lineTo(rect.left, rect.top + rect.height / 2.0)
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection textDirection}) {}
+
+  // This border doesn't support scaling.
+  @override
+  ShapeBorder scale(double t) {
+    return null;
   }
 }
