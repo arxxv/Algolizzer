@@ -400,6 +400,14 @@ class DivideandConquerState extends State<DivideandConquer> {
 //    }
 //  }
 
+//  Bucketsort() {
+//    List<double> buckets;
+//    for (int i = 0; i < totalBars; i++) {
+//      int bi = totalBars.floor() * _numArray[i];
+//      buckets[bi].add(_numArray[i]);
+//    }
+//  }
+
   Pancakesort() async {
     int curr_size = totalBars.floor();
 

@@ -16,21 +16,25 @@ class BruteForceState extends State<BruteForce> {
   bool isSorting = false;
   bool isSorted = false;
 
+  int cycle_startx = 0;
+  int posx = 0;
+  int cycleindex;
+  int nextx = 0;
+  bool b = false;
+
   int fbar = -1;
   int lbar = -1;
   int rstart = -1;
   int rend = -1;
-//  int bac=-1;
-
-  bool fbarbool = false;
-  bool lbarbool = false;
-  bool rstartbool = false;
-  bool rendbool = false;
-
-  var loc = 0;
+  int swapbar1 = -1;
+  int swapbar2 = -1;
+  int extra1 = -1;
+  int extra2 = -1;
+  int extra3 = -1;
+  int extra4 = -1;
+  int extra5 = -1;
 
   int selected = 0;
-//  double speed = 1/duration;
   static int duration = 200;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -49,21 +53,18 @@ class BruteForceState extends State<BruteForce> {
   }
 
   _buildArray() {
-//    fbar = null;
-//    lbar = null;
     isSorted = false;
     _numArray = [];
 
     for (int i = 0; i < totalBars; ++i) {
-      _numArray.add(Random().nextInt(kheightbars));
+      int x = Random().nextInt(kheightbars);
+      _numArray.add(x);
+      print(x);
     }
-
     _streamController.add(_numArray);
   }
 
   resetOnSort() async {
-//    fbar = null;
-//    lbar = null;
     if (isSorted) {
       _buildArray();
       await Future.delayed(Duration(milliseconds: 200));
@@ -98,10 +99,6 @@ class BruteForceState extends State<BruteForce> {
     }
 
     stopwatch.stop();
-    fbarbool = false;
-    lbarbool = false;
-    lbar = -1;
-    rstartbool = false;
 
     _scaffoldKey.currentState.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(
@@ -122,8 +119,6 @@ class BruteForceState extends State<BruteForce> {
       isSorting = false;
       isSorted = true;
     });
-//    fbar = null;
-//    lbar = null;
   }
 
   Color getcolor() {
@@ -147,46 +142,42 @@ class BruteForceState extends State<BruteForce> {
     }
   }
 
-  Selectionsort() async {
-    for (int i = 0; i < _numArray.length - 1; i++) {
-      int minJ = i;
-      fbarbool = true;
-      fbar = i;
+  Bubblesort() async {
+    bool swapped;
+    int N = totalBars.floor();
+    do {
+      extra1 = N - 1;
+
       await Future.delayed(dur(), () {});
       _streamController.add(_numArray);
+      swapped = false;
+      for (int i = 1; i < N; i++) {
+        extra2 = i;
 
-      for (int j = i + 1; j < _numArray.length; j++) {
-        lbarbool = true;
-        lbar = j;
         await Future.delayed(dur(), () {});
         _streamController.add(_numArray);
 
-        if (_numArray[minJ] > _numArray[j]) {
-          int temp = _numArray[j];
-          _numArray[j] = _numArray[i];
+        if (_numArray[i - 1] > _numArray[i]) {
+          int temp = _numArray[i - 1];
+          _numArray[i - 1] = _numArray[i];
           _numArray[i] = temp;
-        }
+          swapped = true;
 
-        await Future.delayed(dur(), () {});
-        _streamController.add(_numArray);
+          //visualize{
+          swapbar1 = i;
+          swapbar2 = i - 1;
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+          _streamController.add(_numArray);
+          //}
+
+        }
+        swapbar1 = -1;
+        swapbar2 = -1;
       }
-      await Future.delayed(dur(), () {});
-      _streamController.add(_numArray);
-    }
-//    for (int i = 0; i < _numArray.length; i++) {
-//      for (int j = i + 1; j < _numArray.length; j++) {
-//        if (_numArray[i] > _numArray[j]) {
-//          int temp = _numArray[j];
-//          _numArray[j] = _numArray[i];
-//          _numArray[i] = temp;
-//        }
-//
-//        await Future.delayed(dur(), () {});
-//        _streamController.add(_numArray);
-//      }
-//      await Future.delayed(dur(), () {});
-//      _streamController.add(_numArray);
-//    }
+      N--;
+    } while (swapped);
   }
 
   Combsort() async {
@@ -200,13 +191,11 @@ class BruteForceState extends State<BruteForce> {
       }
       swapped = false;
       for (int i = 0; i < totalBars - gap; i++) {
-        fbarbool = true;
-        fbar = i;
+        extra1 = i;
         await Future.delayed(dur(), () {});
         _streamController.add(_numArray);
 
-        lbarbool = true;
-        lbar = i + gap;
+        extra2 = i + gap;
         await Future.delayed(dur(), () {});
         _streamController.add(_numArray);
 
@@ -215,13 +204,18 @@ class BruteForceState extends State<BruteForce> {
           _numArray[i] = _numArray[i + gap];
           _numArray[i + gap] = temp;
           swapped = true;
-        }
 
-//        await Future.delayed(dur(), () {});
-//        _streamController.add(_numArray);
+          swapbar1 = i;
+          swapbar2 = i + gap;
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+
+          _streamController.add(_numArray);
+        }
+        swapbar1 = -1;
+        swapbar2 = -1;
       }
-//      await Future.delayed(dur(), () {});
-//      _streamController.add(_numArray);
     }
   }
 
@@ -232,266 +226,182 @@ class BruteForceState extends State<BruteForce> {
         cycle_start++) {
       int item = _numArray[cycle_start];
       int pos = cycle_start;
-      fbarbool = true;
-      fbar = cycle_start;
+
+      extra1 = cycle_start;
+
       for (int i = cycle_start + 1; i < _numArray.length; i++) {
-        lbarbool = true;
-        lbar = i;
+        extra2 = i;
         await Future.delayed(dur());
         _streamController.add(_numArray);
         if (_numArray[i] < item) pos++;
       }
 
       if (pos == cycle_start) {
+        setState(() {
+          cycle_startx = item;
+          posx = pos;
+        });
+
+        extra1 = -1;
         continue;
       }
 
       while (item == _numArray[pos]) {
-        pos += 1;
+        pos++;
       }
 
-      if (pos != cycle_start) {
-        int temp = item;
-        item = _numArray[pos];
-        _numArray[pos] = temp;
-        writes++;
-      }
+      b = true;
+
+      setState(() {
+        nextx = _numArray[pos];
+        posx = pos;
+        cycle_startx = item;
+        cycleindex = cycle_start;
+      });
+
+      int temp = item;
+      item = _numArray[pos];
+      _numArray[pos] = temp;
+
+      writes++;
+
+      swapbar1 = pos;
+      swapbar2 = cycle_start;
+      await Future.delayed(dur());
+      await Future.delayed(dur());
+      await Future.delayed(dur());
+      _streamController.add(_numArray);
+      swapbar1 = -1;
+      swapbar2 = -1;
 
       while (pos != cycle_start) {
         pos = cycle_start;
 
         for (int i = cycle_start + 1; i < _numArray.length; i++) {
-          lbarbool = true;
-          lbar = i;
+          extra2 = i;
           await Future.delayed(dur());
           _streamController.add(_numArray);
 
           if (_numArray[i] < item) pos += 1;
-          //=======================================
-
         }
 
         while (item == _numArray[pos]) {
           pos += 1;
         }
 
-        if (item != _numArray[pos]) {
-          int temp = item;
-          item = _numArray[pos];
-          _numArray[pos] = temp;
-          writes++;
-        }
+        setState(() {
+          nextx = _numArray[pos];
+          posx = pos;
+          cycle_startx = item;
+          cycleindex = cycle_start;
+        });
+
+        int temp = item;
+        item = _numArray[pos];
+        _numArray[pos] = temp;
+        writes++;
+
+        swapbar1 = pos;
+        swapbar2 = cycle_start;
+        await Future.delayed(dur());
+        await Future.delayed(dur());
+        await Future.delayed(dur());
+        _streamController.add(_numArray);
+        swapbar1 = -1;
+        swapbar2 = -1;
       }
     }
   }
 
-  Bubblesort() async {
-    bool swapped;
-    int N = totalBars.floor();
-    do {
-      fbarbool = true;
-      fbar = N - 1;
+  String getcytext() {
+    String str;
 
-      await Future.delayed(dur(), () {});
-      _streamController.add(_numArray);
-      swapped = false;
-      for (int i = 1; i < N; i++) {
-        lbarbool = true;
-        lbar = i;
+    List<int> nos = [];
+    for (int i in _numArray) nos.add(i);
 
-        await Future.delayed(dur(), () {});
-        _streamController.add(_numArray);
-
-        if (_numArray[i - 1] > _numArray[i]) {
-          int temp = _numArray[i - 1];
-          _numArray[i - 1] = _numArray[i];
-          _numArray[i] = temp;
-          swapped = true;
-          await Future.delayed(dur(), () {});
-          _streamController.add(_numArray);
-        }
-      }
-//      fbar = -1;
-//      fbarbool = false;
-
-      N--;
-    } while (swapped);
-
-//    for (int i = 0; i < totalBars - 1; ++i) {
-//      fbar = i;
-//      for (int j = 0; j < totalBars - i - 1; ++j) {
-//        lbar = j;
-//        if (_numArray[j] > _numArray[j + 1]) {
-//          int t = _numArray[j];
-//          _numArray[j] = _numArray[j + 1];
-//          _numArray[j + 1] = t;
-//        }
-//        await Future.delayed(dur(), () {});
-//        _streamController.add(_numArray);
-//      }
-//      await Future.delayed(dur(), () {});
-//      _streamController.add(_numArray);
-//    }
-  }
-
-  Mergesort(int l, int r) async {
-    Future<void> merge(int l, int m, int r) async {
-      int L = m - l + 1;
-      int R = r - m;
-
-      List LL = new List(L);
-      List RL = new List(R);
-
-      for (int i = 0; i < L; i++) LL[i] = _numArray[l + i];
-      for (int j = 0; j < R; j++) RL[j] = _numArray[m + j + 1];
-
-      int i = 0, j = 0;
-      int k = l;
-
-      while (i < L && j < R) {
-        if (LL[i] <= RL[j]) {
-          _numArray[k] = LL[i];
-          i++;
+    if (isSorting) {
+      if (selected == 2) {
+        if (posx == cycleindex) {
+          str = "Rewrote ${nos[posx]} to $posx";
         } else {
-          _numArray[k] = RL[j];
-          j++;
+          str = "Rewrote $cycle_startx to index $posx; next value:$nextx";
         }
-
-        await Future.delayed(dur(), () {});
-        _streamController.add(_numArray);
-
-        k++;
+      } else {
+        str = " ";
       }
+    } else
+      str = " ";
 
-      while (i < L) {
-        _numArray[k] = LL[i];
-        i++;
-        k++;
-
-        await Future.delayed(dur(), () {});
-        _streamController.add(_numArray);
-      }
-
-      while (j < R) {
-        _numArray[k] = RL[j];
-        j++;
-        k++;
-
-        await Future.delayed(dur(), () {});
-        _streamController.add(_numArray);
-      }
-    }
-
-    if (l < r) {
-      int m = (r + l) ~/ 2;
-
-      await Mergesort(l, m);
-      await Mergesort(m + 1, r);
-
-      await Future.delayed(dur(), () {});
-
-      _streamController.add(_numArray);
-
-      await merge(l, m, r);
-    }
+    return str;
   }
 
   Insertionsort() async {
     for (int i = 1; i < totalBars.floor(); i++) {
       int key = _numArray[i];
-      fbarbool = true;
-      fbar = i;
+
+      extra1 = i;
       await Future.delayed(dur(), () {});
       _streamController.add(_numArray);
+
       int j;
       for (j = i - 1; (j >= 0 && _numArray[j] > key); j--) {
-        lbarbool = true;
-        lbar = j;
-        _numArray[j + 1] = _numArray[j];
+        extra2 = j;
+        await Future.delayed(dur(), () {});
         await Future.delayed(dur(), () {});
         _streamController.add(_numArray);
+
+        _numArray[j + 1] = _numArray[j];
       }
       _numArray[j + 1] = key;
     }
-
-//    for (int i = 0; i < totalBars; i++) {
-//      int key = _numArray[i];
-//      int j = i - 1;
-//
-//      while (j >= 0 && _numArray[j] > key) {
-//        _numArray[j + 1] = _numArray[j];
-//        j = j - 1;
-//        await Future.delayed(dur(), () {});
-//        _streamController.add(_numArray);
-//      }
-//      await Future.delayed(dur(), () {});
-//      _streamController.add(_numArray);
-//      _numArray[j + 1] = key;
-//    }
   }
-
-//  panflip(i) async {
-//    int start = 0;
-//
-//    while (start < i) {
-//      int temp = _numArray[start];
-//      _numArray[start] = _numArray[i];
-//      _numArray[i] = temp;
-//      start++;
-//      i--;
-//
-//      fbarbool = true;
-//      lbarbool = true;
-//      fbar = i;
-//      lbar = start;
-//      await Future.delayed(dur(), () {});
-//      _streamController.add(_numArray);
-//    }
-//  }
 
   Pancakesort() async {
     int curr_size = totalBars.floor();
 
     while (curr_size > 1) {
+      extra1 = curr_size - 1;
       int mi = 0;
 
       for (int i = 0; i < curr_size; i++) {
+        extra3 = i;
         if (_numArray[i] > _numArray[mi]) {
           mi = i;
         }
 
-        rstartbool = true;
-        rstart = mi;
+        extra2 = mi;
+
         await Future.delayed(dur(), () {});
         _streamController.add(_numArray);
-
-//        rendbool = false;
-//        rend = -1;
-//        await Future.delayed(dur(), () {});
-//        _streamController.add(_numArray);
       }
-      rendbool = true;
-      rend = curr_size - 1;
-      rstartbool = false;
+      extra3 = -1;
+      extra2 = -1;
+
+      rstart = 0;
+      rend = mi;
 
       if (mi != curr_size) {
 //     await panflip(mi);
         int start = 0;
         while (start < mi) {
+          swapbar1 = mi;
+          swapbar2 = start;
+
           int temp = _numArray[start];
           _numArray[start] = _numArray[mi];
           _numArray[mi] = temp;
           start++;
           mi--;
 
-          fbarbool = true;
-          lbarbool = true;
-          fbar = mi;
-          lbar = start;
-
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
           await Future.delayed(dur(), () {});
           _streamController.add(_numArray);
         }
+
+        rstart = 0;
+        rend = curr_size - 1;
+
 //       await panflip(curr_size-1)
         start = 0;
         int x = curr_size - 1;
@@ -502,15 +412,53 @@ class BruteForceState extends State<BruteForce> {
           start++;
           x--;
 
-          fbarbool = true;
-          lbarbool = true;
-          fbar = x;
-          lbar = start;
+          swapbar1 = x;
+          swapbar2 = start;
           await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+
           _streamController.add(_numArray);
         }
+        swapbar1 = -1;
+        swapbar2 = -1;
+        rstart = -1;
+        rend = -1;
       }
       curr_size--;
+    }
+  }
+
+  Selectionsort() async {
+    for (int i = 0; i < _numArray.length - 1; i++) {
+      int minJ = i;
+
+      extra1 = i;
+      await Future.delayed(dur(), () {});
+      _streamController.add(_numArray);
+
+      for (int j = i + 1; j < _numArray.length; j++) {
+        extra2 = j;
+        await Future.delayed(dur(), () {});
+        _streamController.add(_numArray);
+
+        if (_numArray[minJ] > _numArray[j]) {
+          int temp = _numArray[j];
+          _numArray[j] = _numArray[i];
+          _numArray[i] = temp;
+          swapbar1 = i;
+          swapbar2 = j;
+          await Future.delayed(dur(), () {});
+          await Future.delayed(dur(), () {});
+          _streamController.add(_numArray);
+          swapbar1 = -1;
+          swapbar2 = -1;
+        }
+
+        await Future.delayed(dur(), () {});
+        _streamController.add(_numArray);
+      }
+      await Future.delayed(dur(), () {});
+      _streamController.add(_numArray);
     }
   }
 
@@ -527,129 +475,80 @@ class BruteForceState extends State<BruteForce> {
     if (selected == 0) {
       if (isSorted) {
         return kbscolor;
-      } else if (!fbarbool) {
+      } else if (!isSorting) {
         return Colors.white70;
-      } else if (fbarbool && !lbarbool) {
-        if (fbar == num) {
-          return Colors.red;
-        } else {
-          return kbscolor;
-        }
-      } else if (fbarbool && lbarbool) {
-        if (num == fbar || num == lbar) {
-          return Colors.red;
-        } else {
-          return kbscolor;
-        }
       }
+
+      if (swapbar1 == num || swapbar2 == num) return kbsswap;
+      if (num == extra1) return kbsdark;
+      if (num == extra2) return kbsiter;
+      if (num != swapbar1 && num != swapbar2 && num != extra1 && num != extra2)
+        return kbscolor;
     }
     if (selected == 1) {
       if (isSorted) {
         return kcocolor;
-      } else if (!fbarbool) {
+      } else if (!isSorting) {
         return Colors.white70;
-      } else if (fbarbool && !lbarbool) {
-        if (fbar == num) {
-          return kcodark;
-        } else {
-          return kcocolor;
-        }
-      } else if (fbarbool && lbarbool) {
-        if (num == fbar || num == lbar) {
-          return kcodark;
-        } else {
-          return kcocolor;
-        }
       }
+      if (num == swapbar1 || num == swapbar2) return kcoswap;
+      if (num == extra1 || num == extra2) return kcodark;
+      if (num != swapbar1 && num != swapbar2 && num != extra1 && num != extra2)
+        return kcocolor;
     }
     if (selected == 2) {
       if (isSorted) {
         return kcycolor;
-      } else if (!fbarbool) {
+      } else if (!isSorting) {
         return Colors.white70;
-      } else if (fbarbool && !lbarbool) {
-        if (num == fbar) {
-          return kcydark;
-        } else {
-          return kcycolor;
-        }
-      } else if (fbarbool && lbarbool) {
-        if (num == fbar || num == lbar) {
-          return kcydark;
-        } else {
-          return kcycolor;
-        }
       }
+      if (swapbar1 == num || swapbar2 == num) return kcyswap;
+      if (extra1 == num) return kcydark;
+      if (extra2 == num) return kcydark;
+      if (extra1 != num && extra2 != num) return kcycolor;
     }
     if (selected == 3) {
       if (isSorted) {
         return kincolor;
-      } else if (!fbarbool) {
+      } else if (!isSorting) {
         return Colors.white70;
-      } else if (fbarbool && !lbarbool) {
-        if (num == fbar) {
-          return kindark;
-        } else {
-          return kincolor;
-        }
-      } else if (fbarbool && lbarbool) {
-        if (num == fbar || num == lbar) {
-          return kindark;
-        } else {
-          return kincolor;
-        }
       }
+      if (extra1 == num) return kinsec;
+      if (extra2 == num) return kindark;
+      if (extra1 != num && extra2 != num) return kincolor;
     }
-
     if (selected == 4) {
       if (isSorted) {
         return kpacolor;
       } else if (!isSorting) {
         return Colors.white70;
-      } else if (rendbool) {
-        if (num == rend) {
-          return kpandark;
-        } else if (rstartbool) {
-          if (num == rstart) {
-            return Colors.red;
-          } else {
-            return kpacolor;
-          }
-        } else if ((fbarbool && lbarbool)) {
-          if (num == fbar || num == lbar) {
-            return kpadark;
-          } else {
-            return kpacolor;
-          }
-        } else {
-          return kpacolor;
-        }
-      } else if ((fbarbool && lbarbool)) {
-        if (num == fbar || num == lbar) {
-          return kpadark;
-        } else {
-          return kpacolor;
-        }
       }
+      if (num == swapbar1 || num == swapbar2) return kpaswap;
+      if (rstart <= num && num <= rend) return kpadark;
+      if (num == extra1) return kpandark;
+      if (num == extra2) return kpamax;
+      if (num == extra3) return kpanvdark;
+
+      if (num != rstart &&
+          num != rend &&
+          num != extra1 &&
+          num != extra3 &&
+          num != extra2 &&
+          num != swapbar2 &&
+          num != swapbar1) return kpacolor;
     }
     if (selected == 5) {
       if (isSorted) {
         return ksecolor;
-      } else if (!fbarbool) {
+      } else if (!isSorting) {
         return Colors.white70;
-      } else if (fbarbool && !lbarbool) {
-        if (num == fbar) {
-          return ksedark;
-        } else {
-          return ksecolor;
-        }
-      } else if (fbarbool && lbarbool) {
-        if (num == fbar || num == lbar) {
-          return ksedark;
-        } else {
-          return ksecolor;
-        }
       }
+
+      if (swapbar1 == num || swapbar2 == num) return kseswap;
+      if (extra1 == num || extra2 == num) return ksedark;
+
+      if (num != extra1 && num != extra2 && num != swapbar1 && num != swapbar2)
+        return ksecolor;
     }
   }
 
@@ -699,6 +598,21 @@ class BruteForceState extends State<BruteForce> {
               //==============================================================================SETTINGS COLUMN=========================================================================
               Column(
                 children: <Widget>[
+//                  Row(
+//                    children: <Widget>[
+//                      Text(
+//                        "Color bar: ",
+//                        style: TextStyle(color: Colors.white54),
+//                      ),
+//                      Container(
+//                        height: 10,
+//                        width: 10,
+//                        color: getcolor(),
+//                      )
+//                    ],
+//                  ),
+
+                  Text(getcytext(), style: TextStyle(color: Colors.white54)),
                   //=========================================================================SPEED SLIDER===============================================================================
                   CupertinoPicker(
                       itemExtent: 50,
@@ -863,15 +777,14 @@ class BarPainter extends CustomPainter {
   final int height;
   final int index;
   final Color colour;
-  final double loc;
 
-  BarPainter({this.height, this.index, this.width, this.colour, this.loc});
+  BarPainter({this.height, this.index, this.width, this.colour});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     paint.color = colour;
-    paint.strokeCap = StrokeCap.round;
+    paint.strokeCap = StrokeCap.square;
     paint.strokeWidth = width;
 
     canvas.drawLine(Offset(index * width, 0),
